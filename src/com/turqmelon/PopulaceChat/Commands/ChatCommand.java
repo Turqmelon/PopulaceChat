@@ -163,6 +163,34 @@ public class ChatCommand implements CommandExecutor {
                 else{
                     sender.sendMessage(Msg.ERR + args[1] + " doesn't exist.");
                 }
+            } else if (cmd.equalsIgnoreCase("slowmode") && args.length == 3 && sender.hasPermission("populace.channels.admin")) {
+                ChatChannel chatChannel = ChannelManager.getChannel(args[1]);
+                if (chatChannel != null) {
+
+                    try {
+
+                        int seconds = Integer.parseInt(args[2]);
+                        if (seconds < 0 || seconds > 300) {
+                            throw new NumberFormatException();
+                        }
+
+                        chatChannel.setSlowmode(seconds);
+
+                        sender.sendMessage(Msg.OK + "Slow mode seconds updated: " + chatChannel.getSlowmode());
+                        try {
+                            PopulaceChat.saveData();
+                        } catch (IOException e) {
+                            sender.sendMessage(Msg.ERR + e.getMessage());
+                        }
+
+                    } catch (NumberFormatException ex) {
+                        sender.sendMessage(Msg.ERR + "Please enter a valid number. (0 to disable.)");
+                    }
+
+
+                } else {
+                    sender.sendMessage(Msg.ERR + args[1] + " doesn't exist.");
+                }
             }
             else{
                 sendHelp(sender);
@@ -183,6 +211,7 @@ public class ChatCommand implements CommandExecutor {
             sender.sendMessage(Msg.INFO + "/ch delete §f<Channel>");
             sender.sendMessage(Msg.INFO + "/ch default §f<Channel>");
             sender.sendMessage(Msg.INFO + "/ch leaveable §f<Channel>");
+            sender.sendMessage(Msg.INFO + "/ch slowmode §f<Channel> <Seconds>");
         }
     }
 }

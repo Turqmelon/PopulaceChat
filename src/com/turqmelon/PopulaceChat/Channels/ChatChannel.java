@@ -3,6 +3,7 @@ package com.turqmelon.PopulaceChat.Channels;
 
 import com.turqmelon.Populace.Resident.Resident;
 import com.turqmelon.Populace.Resident.ResidentManager;
+import com.turqmelon.Populace.Utils.ClockUtil;
 import com.turqmelon.Populace.Utils.Msg;
 import com.turqmelon.PopulaceChat.Channels.core.GlobalChat;
 import com.turqmelon.PopulaceChat.Channels.core.TownChat;
@@ -11,9 +12,7 @@ import org.bukkit.entity.Player;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 public abstract class ChatChannel {
@@ -26,7 +25,10 @@ public abstract class ChatChannel {
     private boolean defaultChannel = false;
     private boolean leaveable = true;
 
+    private int slowmode = 0;
+
     private List<Resident> listeners = new ArrayList<>();
+    private Map<UUID, Long> lastchat = new HashMap<>();
 
     public ChatChannel(UUID uuid, String name, String shortName, ChatColor color) {
         this.uuid = uuid;
@@ -42,6 +44,8 @@ public abstract class ChatChannel {
         this.color = ChatColor.valueOf((String) object.get("color"));
         this.defaultChannel = (boolean) object.get("default");
         this.leaveable = (boolean) object.get("leaveable");
+        long slow = (long) object.getOrDefault("slowmode", 0);
+        this.slowmode = (int) slow;
 
         JSONArray listeners = (JSONArray) object.get("listeners");
         for(Object o : listeners){
@@ -67,6 +71,7 @@ public abstract class ChatChannel {
 
         object.put("default", isDefaultChannel());
         object.put("leaveable", isLeaveable());
+        object.put("slowmode", getSlowmode());
 
         JSONArray listeners = new JSONArray();
         for(Resident resident : getListeners()){
@@ -91,11 +96,24 @@ public abstract class ChatChannel {
 
     protected abstract String formatMessage(Player player, Resident sender, String message);
 
+    public void setSlowmode(int slowmode) {
+        this.slowmode = slowmode;
+    }
+
     public void chat(Player player, Resident resident, String message){
         if (canJoin(resident) && canChat(resident)){
 
             join(resident);
-            sendMessage(formatMessage(player, resident, message));
+
+            String clock = getSlowModeTime(player);
+            if (clock == null) {
+                sendMessage(formatMessage(player, resident, message));
+                updateLastChat(player);
+            } else {
+                resident.sendMessage(Msg.ERR + getColor() + getName() + "§c has slow mode enabled.");
+                resident.sendMessage(Msg.ERR + "You can talk again in " + clock + ".");
+            }
+
 
         }
         else{
@@ -130,6 +148,35 @@ public abstract class ChatChannel {
             resident.sendMessage(Msg.ERR + "You can't enter " + getColor() + getName() + ChatColor.RED + ".");
         }
 
+    }
+
+    public boolean isEffectedBySlowMode(Player player) {
+        return !player.hasPermission("populace.chat.noslow") && !player.hasMetadata("populace.chat." + getName().toLowerCase() + ".noslow");
+    }
+
+    public String getSlowModeTime(Player player) {
+
+        if (isEffectedBySlowMode(player)) {
+            long last = getLastChat(player);
+            long nextChat = last + (getSlowmode() * 1000);
+            if (System.currentTimeMillis() < nextChat) {
+                return ClockUtil.formatDateDiff(nextChat, false);
+            }
+        }
+
+        return null;
+    }
+
+    public void updateLastChat(Player resident) {
+        lastchat.put(resident.getUniqueId(), System.currentTimeMillis());
+    }
+
+    public long getLastChat(Player resident) {
+        return lastchat.containsKey(resident.getUniqueId()) ? lastchat.get(resident.getUniqueId()) : 0;
+    }
+
+    public int getSlowmode() {
+        return slowmode;
     }
 
     public boolean isLeaveable() {
