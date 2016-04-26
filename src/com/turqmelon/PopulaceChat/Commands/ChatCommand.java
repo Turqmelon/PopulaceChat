@@ -76,7 +76,7 @@ public class ChatCommand implements CommandExecutor {
                 List<String> channels = new ArrayList<>();
                 for(ChatChannel channel : ChannelManager.getChannels()){
                     if (channel.canJoin(resident)){
-                        channels.add(channel.getColor() + channel.getName() + "§8");
+                        channels.add(channel.getColor() + channel.getName() + "§7§o(" + channel.getShortName() + ")§8");
                     }
                 }
                 sender.sendMessage(Msg.INFO + "There are " + channels.size() + " channels: §f" + channels.toString().replace("[", "").replace("]", ""));
