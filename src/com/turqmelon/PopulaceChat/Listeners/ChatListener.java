@@ -44,14 +44,14 @@ public class ChatListener implements Listener {
         }
 
         ChatChannel chatChannel = ChannelManager.getChannel(key);
-        if (chatChannel != null){
+        if (chatChannel != null && !key.equalsIgnoreCase("town")) {
             event.setCancelled(true);
             String message = "";
             for(int i = 1; i < parts.length; i++){
                 message = message + " " + parts[i];
             }
-            message=message.substring(1);
             if (message.length() > 0){
+                message = message.substring(1);
                 chatChannel.chat(player, resident, message);
             }
             else{

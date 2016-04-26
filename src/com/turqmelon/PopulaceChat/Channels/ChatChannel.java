@@ -159,6 +159,11 @@ public abstract class ChatChannel {
 
     }
 
+    protected String getDisplayName(Player player, Resident resident) {
+        return (resident.getTown() != null ? resident.getTown().getLevel().getColor() + "[" + resident.getTown().getName() + "] " + ChatColor.WHITE : "") +
+                player.getDisplayName();
+    }
+
     public abstract boolean canJoin(Resident resident);
     public abstract boolean canChat(Resident resident);
 

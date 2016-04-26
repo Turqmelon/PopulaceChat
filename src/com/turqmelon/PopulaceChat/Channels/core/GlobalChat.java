@@ -21,7 +21,7 @@ public class GlobalChat extends ChatChannel {
 
     @Override
     protected String formatMessage(Player player, Resident sender, String message) {
-        return player.getDisplayName() + getColor() + ": " + message;
+        return getDisplayName(player, sender) + getColor() + ": " + message;
     }
 
     @Override
