@@ -1,0 +1,11 @@
+name: PopulaceChat
+author: Turqmelon
+main: com.turqmelon.PopulaceChat.PopulaceChat
+description: Chat management for Populace
+depend: [Populace]
+version: 1.0
+commands:
+    chat:
+        usage: /chat
+        description: Shows chat commands
+        aliases: [ch, populacechat]
