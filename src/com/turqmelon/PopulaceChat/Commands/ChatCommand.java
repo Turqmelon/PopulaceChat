@@ -191,6 +191,30 @@ public class ChatCommand implements CommandExecutor {
                 } else {
                     sender.sendMessage(Msg.ERR + args[1] + " doesn't exist.");
                 }
+            } else if (cmd.equalsIgnoreCase("color") && args.length == 3 && sender.hasPermission("populace.channels.admin")) {
+                ChatChannel chatChannel = ChannelManager.getChannel(args[1]);
+                if (chatChannel != null) {
+
+                    try {
+
+                        ChatColor color = ChatColor.valueOf(args[2].toUpperCase());
+                        chatChannel.setColor(color);
+
+                        sender.sendMessage(Msg.OK + "Channel color updated: " + color + chatChannel.getColor().name());
+                        try {
+                            PopulaceChat.saveData();
+                        } catch (IOException e) {
+                            sender.sendMessage(Msg.ERR + e.getMessage());
+                        }
+
+                    } catch (Exception ex) {
+                        sender.sendMessage(Msg.ERR + "Please enter a valid color.");
+                    }
+
+
+                } else {
+                    sender.sendMessage(Msg.ERR + args[1] + " doesn't exist.");
+                }
             }
             else{
                 sendHelp(sender);
@@ -212,6 +236,7 @@ public class ChatCommand implements CommandExecutor {
             sender.sendMessage(Msg.INFO + "/ch default §f<Channel>");
             sender.sendMessage(Msg.INFO + "/ch leaveable §f<Channel>");
             sender.sendMessage(Msg.INFO + "/ch slowmode §f<Channel> <Seconds>");
+            sender.sendMessage(Msg.INFO + "/ch color §f<Channel> <Color>");
         }
     }
 }

@@ -7,6 +7,7 @@ import com.turqmelon.PopulaceChat.Channels.core.TownChat;
 import com.turqmelon.PopulaceChat.Channels.custom.CustomChannel;
 import com.turqmelon.PopulaceChat.Commands.ChatCommand;
 import com.turqmelon.PopulaceChat.Listeners.ChatListener;
+import com.turqmelon.PopulaceChat.Listeners.PopulaceListener;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONArray;
@@ -121,6 +122,7 @@ public class PopulaceChat extends JavaPlugin {
         instance = this;
 
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
+        getServer().getPluginManager().registerEvents(new PopulaceListener(), this);
 
         try {
             loadData();

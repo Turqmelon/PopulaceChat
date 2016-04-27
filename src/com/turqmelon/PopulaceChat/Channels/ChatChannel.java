@@ -93,6 +93,9 @@ public abstract class ChatChannel {
         return object;
     }
 
+    public void setColor(ChatColor color) {
+        this.color = color;
+    }
 
     protected abstract String formatMessage(Player player, Resident sender, String message);
 
