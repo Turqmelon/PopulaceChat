@@ -2,6 +2,7 @@ package com.turqmelon.PopulaceChat.Listeners;
 
 import com.turqmelon.Populace.Events.Resident.ResidentJoinTownEvent;
 import com.turqmelon.Populace.Events.Resident.ResidentLeaveTownEvent;
+import com.turqmelon.Populace.Events.Town.TownCreationEvent;
 import com.turqmelon.Populace.Resident.Resident;
 import com.turqmelon.PopulaceChat.Channels.ChannelManager;
 import com.turqmelon.PopulaceChat.Channels.ChatChannel;
@@ -30,6 +31,21 @@ import org.bukkit.event.Listener;
  * *
  ******************************************************************************/
 public class PopulaceListener implements Listener {
+
+    @EventHandler
+    public void onCreate(TownCreationEvent event) {
+        Resident resident = event.getMayor();
+        TownChat chat = null;
+        for (ChatChannel channel : ChannelManager.getChannels()) {
+            if ((channel instanceof TownChat)) {
+                chat = (TownChat) channel;
+                break;
+            }
+        }
+        if (chat != null) {
+            ChannelManager.focusChannel(resident, chat);
+        }
+    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onTownJoin(ResidentJoinTownEvent event) {
