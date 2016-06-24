@@ -93,15 +93,7 @@ public abstract class ChatChannel {
         return object;
     }
 
-    public void setColor(ChatColor color) {
-        this.color = color;
-    }
-
     protected abstract String formatMessage(Player player, Resident sender, String message);
-
-    public void setSlowmode(int slowmode) {
-        this.slowmode = slowmode;
-    }
 
     public void chat(Player player, Resident resident, String message){
         if (canJoin(resident) && canChat(resident)){
@@ -182,6 +174,10 @@ public abstract class ChatChannel {
         return slowmode;
     }
 
+    public void setSlowmode(int slowmode) {
+        this.slowmode = slowmode;
+    }
+
     public boolean isLeaveable() {
         return leaveable && !isDefaultChannel();
     }
@@ -203,7 +199,7 @@ public abstract class ChatChannel {
         String msg = getColor() + "§l[" + getShortName() + "] " + getColor() + message;
 
         for(Resident resident : getListeners()){
-            if (!canJoin(resident))continue;;
+            if (!canJoin(resident)) continue;
             resident.sendMessage(msg);
         }
 
@@ -211,10 +207,11 @@ public abstract class ChatChannel {
 
     protected String getDisplayName(Player player, Resident resident) {
         return (resident.getTown() != null ? resident.getTown().getLevel().getColor() + "[" + resident.getTown().getName() + "] " + ChatColor.WHITE : "") +
-                player.getDisplayName();
+                player.getDisplayName() + (resident.getPrefix() != null ? " §6§l" + resident.getPrefix() : "");
     }
 
     public abstract boolean canJoin(Resident resident);
+
     public abstract boolean canChat(Resident resident);
 
     public UUID getUuid() {
@@ -231,6 +228,10 @@ public abstract class ChatChannel {
 
     public ChatColor getColor() {
         return color;
+    }
+
+    public void setColor(ChatColor color) {
+        this.color = color;
     }
 
     public List<Resident> getListeners() {
