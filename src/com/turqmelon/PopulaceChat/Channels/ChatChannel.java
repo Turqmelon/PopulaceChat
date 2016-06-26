@@ -102,7 +102,7 @@ public abstract class ChatChannel {
 
             String clock = getSlowModeTime(player);
             if (clock == null) {
-                sendMessage(formatMessage(player, resident, message));
+                sendMessage(sender, formatMessage(player, resident, message));
                 updateLastChat(player);
             } else {
                 resident.sendMessage(Msg.ERR + getColor() + getName() + "§c has slow mode enabled.");
@@ -194,13 +194,20 @@ public abstract class ChatChannel {
         this.defaultChannel = defaultChannel;
     }
 
-    public void sendMessage(String message){
+    public void sendMessage(Resident sender, String message) {
 
         String msg = getColor() + "§l[" + getShortName() + "] " + getColor() + message;
+        UUID townID = sender.getTown().getUuid();
 
         for(Resident resident : getListeners()){
             if (!canJoin(resident)) continue;
-            resident.sendMessage(msg);
+            if ((this instanceof TownChat)) {
+                if (resident.getTown() != null && resident.getTown().getUuid().equals(townID)) {
+                    resident.sendMessage(msg);
+                }
+            } else {
+                resident.sendMessage(msg);
+            }
         }
 
     }
