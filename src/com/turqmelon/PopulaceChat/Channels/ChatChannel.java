@@ -102,7 +102,7 @@ public abstract class ChatChannel {
 
             String clock = getSlowModeTime(player);
             if (clock == null) {
-                sendMessage(sender, formatMessage(player, resident, message));
+                sendMessage(resident, formatMessage(player, resident, message));
                 updateLastChat(player);
             } else {
                 resident.sendMessage(Msg.ERR + getColor() + getName() + "§c has slow mode enabled.");
